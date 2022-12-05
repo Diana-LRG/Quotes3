@@ -1,6 +1,8 @@
 package com.example.quotes3.core.di
 
 import android.content.Context
+import com.example.quotes3.data.remote.QuoteApiInterface
+import com.example.quotes3.data.remote.QuoteRemoteDataSourceImpl
 import com.example.quotes3.data.remote.UserApiInterface
 import com.example.quotes3.data.remote.UserRemoteDataSourceImpl
 import com.google.gson.GsonBuilder
@@ -17,10 +19,11 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://10.1.6.10:8080/"
+    private const val BASE_URL = "http://192.168.0.14:2022/"
 
     @Provides
     @Singleton
@@ -72,6 +75,16 @@ object NetworkModule {
         return Cache(httpCacheDirectory, CACHE_SIZE_BYTES)
     }
 
+    @Singleton
+    @Provides
+    fun provideQuoteRemoteDataSourceImpl(quoteApiInterface: QuoteApiInterface) =
+        QuoteRemoteDataSourceImpl(quoteApiInterface)
+
+    @Singleton
+    @Provides
+    fun provideQuoteApiInterface(retrofit: Retrofit): QuoteApiInterface =
+        retrofit.create(QuoteApiInterface::class.java)
+
     //--- injection for class and interfaces User
     @Singleton
     @Provides
@@ -83,4 +96,3 @@ object NetworkModule {
     fun provideUserApiInterface(retrofit: Retrofit): UserApiInterface =
         retrofit.create(UserApiInterface::class.java)
 }
-
