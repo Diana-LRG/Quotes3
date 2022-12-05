@@ -4,85 +4,44 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast.LENGTH_SHORT
-import android.widget.Toast.makeText
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.quotes3.R
 import com.example.quotes3.databinding.FragmentQuoteAddBinding
 import com.example.quotes3.domain.model.QuoteModel
 import com.example.quotes3.presentation.viewmodel.QuoteAddViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class QuoteAddFragment : Fragment() {
-
-    private var _binding: FragmentQuoteAddBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
-    private lateinit var viewModel: QuoteAddViewModel
+    private lateinit var binding: FragmentQuoteAddBinding
+    private val quoteAddViewModel: QuoteAddViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-       _binding = FragmentQuoteAddBinding.inflate(inflater, container, false)
+    ): View? {
+        binding = FragmentQuoteAddBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        viewModel = ViewModelProvider(this)[QuoteAddViewModel::class.java]
-        binding.btnBoton.setOnClickListener {
-         /*   val quoteCelebritie = QuoteModel(
-                id = binding.tvAddId.text.toString().toInt(),
-                quote = binding.tvAddQuote.text.toString(),
-                author = binding.tvAddAutor.text.toString()
-            )
-           viewModel.addQuote(quoteCelebritie) */
-            observerAdd()
+        with(binding) {
+            btnSave.setOnClickListener {
+                val quoteModel= QuoteModel(
+                    id = etId.text.toString().toInt(),
+                    quote = etQuote.text.toString(),
+                    author = etAuthor.text.toString(),
+                )
+                lifecycleScope.launch(Dispatchers.IO) {
+                    quoteAddViewModel.addQuote(quoteModel)
+                }
+                val alert = CustomAlert()
+                alert.showDialog(this@QuoteAddFragment.parentFragment, getString(R.string.saved))
 
+            }
         }
         return root
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-    private fun observerAdd() {
-        lifecycleScope.launch {
-            when {
-                isValidData() -> {
-                    viewModel.let {
-                        it.addQuote(getQuoteModel())
-                        showMessage("Quote added")
-                        clearData()
-                    }
-                }
-                else -> showMessage("Please fill all fields")
-            }
-        }
-    }
-
-    private fun isValidData() = binding.tvAddId.text.toString().isNotEmpty() &&
-            binding.tvAddQuote.text.toString().isNotEmpty() &&
-            binding.tvAddAutor.text.toString().isNotEmpty()
-
-    private fun getQuoteModel(): QuoteModel {
-        return QuoteModel(
-            id = binding.tvAddId.text.toString().toInt(),
-            quote = binding.tvAddQuote.text.toString(),
-            author = binding.tvAddAutor.text.toString()
-        )
-    }
-
-    private fun clearData() {
-        binding.tvAddId.text.clear()
-        binding.tvAddQuote.text.clear()
-        binding.tvAddAutor.text.clear()
-    }
-
-    private fun showMessage(message: String) = makeText(context, message, LENGTH_SHORT).show()
 
 }

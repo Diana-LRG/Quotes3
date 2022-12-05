@@ -7,14 +7,18 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_Random" />
+            android:title="@string/menu_quote_randomly" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_quote_add"
+            android:icon="@drawable/baseline_note_add_24"
+            android:title="@string/menu_quote_add" />
+        <item
+            android:id="@+id/nav_quote_list"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_Add" />
+            android:title="@string/menu_quote_list" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_All" />
+            android:id="@+id/nav_login"
+            android:icon="@drawable/baseline_login_24"
+            android:title="@string/menu_user_login" />
     </group>
 </menu>

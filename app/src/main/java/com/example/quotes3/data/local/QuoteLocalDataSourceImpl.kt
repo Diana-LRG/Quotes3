@@ -4,16 +4,24 @@ import com.example.quotes3.core.utils.toEntity
 import com.example.quotes3.core.utils.toListQuoteModel
 import com.example.quotes3.core.utils.toQuoteModel
 import com.example.quotes3.data.local.daos.QuoteDao
+import com.example.quotes3.data.remote.QuoteApiResponse
 import com.example.quotes3.domain.model.QuoteModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+
 class QuoteLocalDataSourceImpl  @Inject constructor(private val quoteDao: QuoteDao): QuoteLocalDataSource {
-    override fun getQuotes(): Flow<List<QuoteModel>> {
-        val quotes = quoteDao.getQuotes()
-        return quotes.map { it.toListQuoteModel() }
+    override suspend fun getQuotes(): Flow<QuoteApiResponse> {
+        val quotesEntity = quoteDao.getQuotes()
+        val data = quotesEntity.map { it.toListQuoteModel() }
+        val quotesModel = data.first()
+        return flow { emit(QuoteApiResponse(true, "list quotes", quotesModel)) }
     }
+
+
 
     override   fun getQuote(quoteId: Int): Flow<QuoteModel> {
         return  quoteDao.getQuote(quoteId).map { it.toQuoteModel()}
@@ -24,11 +32,14 @@ class QuoteLocalDataSourceImpl  @Inject constructor(private val quoteDao: QuoteD
     }
 
     override suspend fun insertAll(quotes: List<QuoteModel>) {
-        quoteDao.insertAll(quotes!!.map { it.toEntity()})
+        quoteDao.insertAll(quotes.map { it.toEntity()})
     }
 
     override suspend fun insert(quoteModel: QuoteModel) {
         quoteDao.insert(quoteModel.toEntity())
     }
 
+    override suspend fun editQuote(quoteModel: QuoteModel) {
+        quoteDao.updateQuote(quoteModel.toEntity())
+    }
 }

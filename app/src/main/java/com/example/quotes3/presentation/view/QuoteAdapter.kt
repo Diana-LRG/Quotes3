@@ -1,0 +1,45 @@
+package com.example.quotes3.presentation.view
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.quotes3.core.utils.CellClickListener
+import com.example.quotes3.databinding.QuoteItemBinding
+import com.example.quotes3.domain.model.QuoteModel
+
+class QuoteAdapter(private val quotes: List<QuoteModel>,
+                   private val cellClickListener: CellClickListener
+) :
+    RecyclerView.Adapter<QuoteAdapter.ViewHolder>() {
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
+            ViewHolder {
+        val binding = QuoteItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent, false)
+
+        return ViewHolder(binding)
+    }
+    inner class ViewHolder(val binding: QuoteItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int){
+        with(holder){
+            with(quotes[position]){
+                binding.tvQuote.text =  this.quote
+                binding.tvAuthor.text = this.author
+
+                binding.cvQuote.setOnClickListener{
+                    cellClickListener.onCellClickListener(this)
+                }
+            }
+        }
+    }
+
+
+    override fun getItemCount(): Int {
+        return quotes.size
+    }
+
+}

@@ -3,6 +3,8 @@ package com.example.quotes3.core.di
 import com.example.quotes3.data.QuoteRepositoryImpl
 import com.example.quotes3.data.local.QuoteLocalDataSource
 import com.example.quotes3.data.local.QuoteLocalDataSourceImpl
+import com.example.quotes3.data.remote.QuoteRemoteDataSource
+import com.example.quotes3.data.remote.QuoteRemoteDataSourceImpl
 import com.example.quotes3.domain.QuoteRepository
 import dagger.Binds
 import dagger.Module
@@ -20,5 +22,12 @@ abstract class QuoteRepositoryModule {
     @Binds
     abstract fun bindQuoteLocalDataSource(quoteLocalDataSourceImpl: QuoteLocalDataSourceImpl):
             QuoteLocalDataSource
+
+    @Binds
+    abstract fun bindQuoteRemoteDataSource(quoteRemoteDataSourceImpl: QuoteRemoteDataSourceImpl):
+            QuoteRemoteDataSource
+
+
+
 
 }
