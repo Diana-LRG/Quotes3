@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.quotes3.R
 import com.example.quotes3.core.utils.CellClickListener
 import com.example.quotes3.databinding.FragmentQuoteListBinding
 import com.example.quotes3.domain.model.QuoteModel
+import com.example.quotes3.presentation.viewmodel.DataStoreViewModel
 import com.example.quotes3.presentation.viewmodel.QuoteListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 class QuoteListFragment : Fragment(), CellClickListener {
     private lateinit var binding: FragmentQuoteListBinding
     private val quoteListViewModel: QuoteListViewModel by viewModels()
+    private  val dataStoreViewModel: DataStoreViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +34,33 @@ class QuoteListFragment : Fragment(), CellClickListener {
         binding = FragmentQuoteListBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        observer()
+        dataStoreViewModel.let {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val token = it.getToken()
+                if (token.isEmpty()) {
+                    lifecycleScope.launch(Dispatchers.Main){
+                        val alert = CustomAlert()
+                        alert.showDialog(
+                            this@QuoteListFragment.parentFragment,
+                            getString(R.string.token_required)
+                        )
+                        //parentFragmentManager.popBackStack()
+                        //this@QuoteListFragment.activity?.finish()
+                        parentFragmentManager.beginTransaction()
+                            .remove(this@QuoteListFragment)
+                            .commit()
+                    }
 
-        lifecycleScope.launch (Dispatchers.IO) {
-            quoteListViewModel.getQuotes()
+                } else {
+                    quoteListViewModel.getQuotes("Bearer $token")
+                }
+            }
         }
+        observer()
         return root
+
     }
+
 
     private fun callEditQuote(currentQuote: QuoteModel){
         val bundle = bundleOf(
@@ -51,7 +74,7 @@ class QuoteListFragment : Fragment(), CellClickListener {
         quoteEditFragment.arguments = bundle
 
         parentFragmentManager.beginTransaction()
-            .replace(com.example.quotes3.R.id.nav_host_fragment_content_drawer_navigation,
+            .replace(R.id.nav_host_fragment_content_drawer_navigation,
                 quoteEditFragment).addToBackStack(this.tag)
             .setReorderingAllowed(true)
             .commit()

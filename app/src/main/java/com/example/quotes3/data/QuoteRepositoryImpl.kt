@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-abstract class QuoteRepositoryImpl @Inject constructor
+class QuoteRepositoryImpl @Inject constructor
     (private val localDataSource: QuoteLocalDataSource,
      private  val remoteDataSource: QuoteRemoteDataSource,
 ):

@@ -1,5 +1,9 @@
 package com.example.quotes3.data.local.daos
 
+import androidx.room.*
+import com.example.quotes3.data.local.entities.QuoteEntity
+import kotlinx.coroutines.flow.Flow
+
 @Dao
 interface QuoteDao {
     @Insert

@@ -1,6 +1,8 @@
 package com.example.quotes3.core.di
 
 import android.content.Context
+import com.example.quotes3.data.local.QuoteDB
+import com.example.quotes3.data.local.daos.QuoteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
